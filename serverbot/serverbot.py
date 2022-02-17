@@ -62,9 +62,12 @@ def getstuff(targeturi):
 
 
 def get_server_status():
-    divs = bs_parse(getstuff(target)).find_all('div', attrs={
-        'class': 'ags-ServerStatus-content-responses-response-server'})
     status_dict = {}
+    content = getstuff(target)
+    if content is None:
+        return status_dict
+    divs = bs_parse(content).find_all('div', attrs={
+        'class': 'ags-ServerStatus-content-responses-response-server'})
     for div in divs:
         name_div = div.find('div', attrs = {
             'class': 'ags-ServerStatus-content-responses-response-server-name'
