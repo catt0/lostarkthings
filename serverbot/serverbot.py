@@ -1,20 +1,38 @@
+#!/usr/bin/env python3
+
+# MIT License
+
+# Copyright (c) 2022 catt0
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 # tested with python 3.8
-# hackish dirty
 
-# used libs
-# pip install lxml
-# pip install bs4
-# if you want mp3 sound play:
-# --   pip install playsound
+"""
+This bot sends a message to a Discord channel every time the
+configured Lost Ark server changes state between up and down.
+The down notification has a slight delay to correct for
+AGS issues where the status page sometimes bugs out.
+"""
 
-# customize def checkerloop() to add own stuff
-# def checkavailable(): gives back TRUE if NOT available, gives back FALSE if available
-# it checks if this span exist, so if other stuff is out of stock it will trigger too
-
-from urllib import request
 import requests
 import time
-import random
 from bs4 import BeautifulSoup
 import os
 from enum import Enum
@@ -28,6 +46,7 @@ class Status(Enum):
     Full = 3
     Maintenance = 4
 
+
 mapper_status_to_class = {
     Status.Good: 'ags-ServerStatus-content-responses-response-server-status--good',
     Status.Busy: 'ags-ServerStatus-content-responses-response-server-status--busy',
@@ -35,27 +54,20 @@ mapper_status_to_class = {
     Status.Maintenance: 'ags-ServerStatus-content-responses-response-server-status--maintenance',
 }
 
-########
 
 def bs_parse(html):
     return BeautifulSoup(html, 'lxml')
 
 
-def add_random_time():
-    return random.randint(1,5) + looptimer
-
-
 def getstuff(targeturi):
     try:
-        req = request.Request(
+        response = requests.get(
             targeturi,
-            data=None,
             headers={
                 'User-Agent': fakeagent
             }
         )
-        response = request.urlopen(req)
-        pagesrc = response.read().decode('utf-8')
+        pagesrc = response.text
         return pagesrc
     except:
         return None
@@ -99,6 +111,7 @@ def get_server_status():
         if name == target_server:
             print('Found server "{}" with status {}.'.format(name, status))
     return status_dict
+
 
 def wait(long_sleep = False):
     if long_sleep:
@@ -157,4 +170,6 @@ def checkerloop():
 
         wait(target_status)
 
-checkerloop()
+
+if __name__ == "__main__":
+    checkerloop()
