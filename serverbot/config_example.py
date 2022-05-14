@@ -4,8 +4,14 @@ Copy to config.py and adjust for your needs.
 
 # Name of your server as it appears on the website, e.g. Kadan
 target_server = ''
-# webhook URL for the Discord channel you want to send to
-webhook_url = ''
+# webhook URLs for the Discord channels you want to send to
+# messages are send to all channels in this list
+webhook_urls = [
+
+]
+# Migration notice:
+# the old config key webhook_url is still supported, messages will be send to webhook_url as well
+# you should move to webhook_urls
 
 up_message = '@everyone The server is now up (probably) :)'
 down_message = 'The server is now down :('

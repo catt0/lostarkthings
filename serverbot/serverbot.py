@@ -25,7 +25,7 @@
 # tested with python 3.8
 
 """
-This bot sends a message to a Discord channel every time the
+This bot sends a message to Discord channels every time the
 configured Lost Ark server changes state between up and down.
 The down notification has a slight delay to correct for
 AGS issues where the status page sometimes bugs out.
@@ -124,15 +124,25 @@ def send_message(is_up):
     message = up_message
     if is_up == False:
         message = down_message
+    hook_list = []
     try:
-        req = requests.post(
-            webhook_url,
-            data=bytes(json.dumps({'content': message}), encoding='utf-8'),
-            headers = {'Content-Type': 'application/json'}
-        )
-        print(req.text)
-    except Exception as e:
-        print(e)
+        hook_list.append(webhook_url)
+    except:
+        pass
+    try:
+        hook_list.extend(webhook_urls)
+    except:
+        pass
+    for url in hook_list:
+        try:
+            req = requests.post(
+                url,
+                data=bytes(json.dumps({'content': message}), encoding='utf-8'),
+                headers = {'Content-Type': 'application/json'}
+            )
+            print(req.text)
+        except Exception as e:
+            print(e)
 
 
 def checkerloop():
